@@ -1,17 +1,29 @@
 const express = require('express');
 
 const db = require('../../data/dbConfig');
+const Recipe = require('./recipes-model.js');
 
 const router = express.Router();
 
-router.get('/api/recipes', (req, res) => {
-  // get all recipes from the database
-  db('recipes')
+router.get('/', (req, res) => {
+  Recipe.getRecipes()
     .then((recipes) => {
-      res.status(200).json(recipes);
+      res.json(recipes);
     })
     .catch((error) => {
-      res.status(500).json(error);
+      res.status(500).json({ error: 'Failed to get recipes' });
+    });
+});
+
+router.get('/:id', (req, res) => {
+  const { id } = req.params;
+
+  Recipe.findById(id)
+    .then((recipe) => {
+      res.json(recipe);
+    })
+    .catch((err) => {
+      res.status(500).json({ message: 'Failed to get recipes' });
     });
 });
 
